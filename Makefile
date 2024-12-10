@@ -1,6 +1,6 @@
 all: build run
 
-FLAGS ?= -I./include
+FLAGS ?= -I./include -Wno-builtin-declaration-mismatch
 
 build:
 	mkdir -p ./bin

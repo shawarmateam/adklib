@@ -8,17 +8,40 @@
 static char memory_pool[MEMORY_POOL_SIZE];
 static size_t used_memory = 0;
 
+typedef struct Block {
+    size_t size;
+    struct Block* next;
+} Block;
+
+static Block* free_list = NULL;
+
+
+
+
 void* malloc(size_t size) {
     size = (size + sizeof(size_t) - 1) & ~(sizeof(size_t) - 1);
+    size += sizeof(Block);
 
     if (used_memory + size > MEMORY_POOL_SIZE) {
         return NULL;
     }
 
-    void* ptr = memory_pool + used_memory;
+    Block* block = (Block*)(memory_pool + used_memory);
+    block->size = size;
+    block->next = free_list;
+    free_list = block;
+
     used_memory += size;
-    return ptr;
+    return (void*)(block + 1);
 }
+
+void free(void* ptr) {
+    if (ptr == NULL) return;
+    Block* block = (Block*)ptr - 1;
+    block->next = free_list;
+    free_list = block;
+}
+
 
 #ifdef ADKLIB_ENABLE_PUTCHAR
 #define ADKLIB_ENABLE_PRINT
@@ -28,6 +51,7 @@ void putchar(char c)
     char * addr_c = malloc(2);
     addr_c[0]=c;
     print(addr_c);
+    free(addr_c);
 }
 #endif
 
