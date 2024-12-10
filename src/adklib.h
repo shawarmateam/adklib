@@ -2,10 +2,13 @@
 #define __ADK_LIB_STANDART
 #include <adklib_settings.h>
 
-#define MEMORY_POOL_SIZE 1024
+#ifndef ADKLIB_MEMORY_POOL_SIZE
+#define ADKLIB_MEMORY_POOL_SIZE 1024
+#endif
+
 #define size_t unsigned int
 #define NULL 0
-static char memory_pool[MEMORY_POOL_SIZE];
+static char memory_pool[ADKLIB_MEMORY_POOL_SIZE];
 static size_t used_memory = 0;
 
 typedef struct Block {
@@ -22,7 +25,7 @@ void* malloc(size_t size) {
     size = (size + sizeof(size_t) - 1) & ~(sizeof(size_t) - 1);
     size += sizeof(Block);
 
-    if (used_memory + size > MEMORY_POOL_SIZE) {
+    if (used_memory + size > ADKLIB_MEMORY_POOL_SIZE) {
         return NULL;
     }
 
