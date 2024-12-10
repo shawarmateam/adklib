@@ -4,18 +4,15 @@
 #define size_t unsigned int
 #define NULL 0
 
-#ifdef ADKLIB_ENABLE_PUTCHAR
-#define ADKLIB_ENABLE_PRINT
-#define ADKLIB_MEMORY_ENABLE
-void print(const char * msg);
-void *malloc(size_t size);
-void free(void *ptr);
-void putchar(char c)
+#ifdef ADKLIB_ENABLE_PRINT
+#define ADKLIB_ENABLE_PUTCHAR
+void putchar(char c); // fn: print; deps: putchar
+void print(const char * str)
 {
-    char * addr_c = malloc(2);
-    addr_c[0]=c;
-    print(addr_c);
-    free(addr_c);
+    while (*str) {
+        putchar(*str);
+        str++;
+    }
 }
 #endif
 
@@ -65,22 +62,29 @@ void free(void* ptr) {
 
 
 
-#ifdef ADKLIB_ENABLE_PRINT
-void print(const char * msg)
-{
-    long msg_len = 0;
-    while (msg[msg_len]!=0) ++msg_len;
+#ifdef ADKLIB_ENABLE_PUTCHAR
+#define ADKLIB_ENABLE_WRITE
+long write(int fd, const char *buf, long count);
 
-    asm (
-        "movq $1, %%rax;"      // syscall: sys_write
-        "movq $1, %%rdi;"      // file descriptor: stdout
-        "movq %0, %%rsi;"      // pointer to message
-        "movq %1, %%rdx;"     // message length
-        "syscall;"             // call kernel
-        : 
-        : "r"(msg), "r"(msg_len)
-        : "%rax", "%rdi", "%rsi", "%rdx"
+void putchar(char c)
+{
+    write(1, &c, 1);
+}
+#endif
+
+#ifdef ADKLIB_ENABLE_WRITE
+long write(int fd, const char *buf, long count) {
+    long ret;
+    asm volatile (
+        "syscall"
+        : "=a" (ret)
+        : "a" (1),
+          "D" (fd),
+          "S" (buf),
+          "d" (count)
+        : "rcx", "r11", "memory"
     );
+    return ret;
 }
 #endif
 
