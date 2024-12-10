@@ -1,13 +1,30 @@
 #ifndef __ADK_LIB_STANDART
 #define __ADK_LIB_STANDART
 #include <adklib_settings.h>
+#define size_t unsigned int
+#define NULL 0
 
+#ifdef ADKLIB_ENABLE_PUTCHAR
+#define ADKLIB_ENABLE_PRINT
+#define ADKLIB_MEMORY_ENABLE
+void print(const char * msg);
+void *malloc(size_t size);
+void free(void *ptr);
+void putchar(char c)
+{
+    char * addr_c = malloc(2);
+    addr_c[0]=c;
+    print(addr_c);
+    free(addr_c);
+}
+#endif
+
+
+#ifdef ADKLIB_MEMORY_ENABLE
 #ifndef ADKLIB_MEMORY_POOL_SIZE
 #define ADKLIB_MEMORY_POOL_SIZE 1024
 #endif
 
-#define size_t unsigned int
-#define NULL 0
 static char memory_pool[ADKLIB_MEMORY_POOL_SIZE];
 static size_t used_memory = 0;
 
@@ -44,19 +61,9 @@ void free(void* ptr) {
     block->next = free_list;
     free_list = block;
 }
+#endif // ADKLIB_MEMORY_ENABLE
 
 
-#ifdef ADKLIB_ENABLE_PUTCHAR
-#define ADKLIB_ENABLE_PRINT
-void print(const char * msg);
-void putchar(char c)
-{
-    char * addr_c = malloc(2);
-    addr_c[0]=c;
-    print(addr_c);
-    free(addr_c);
-}
-#endif
 
 #ifdef ADKLIB_ENABLE_PRINT
 void print(const char * msg)
