@@ -5,14 +5,13 @@
 #define NULL 0
 
 #ifdef ADKLIB_ENABLE_PRINT
-#define ADKLIB_ENABLE_PUTCHAR
-void putchar(char c); // fn: print; deps: putchar
-void print(const char * str)
+#define ADKLIB_ENABLE_WRITE
+long write(int fd, const char *buf, long count);
+void print(const char * str)                        // fn: print; deps: write
 {
-    while (*str) {
-        putchar(*str);
-        str++;
-    }
+    int i;
+    while (str[i]!=0) ++i;
+    write(1, str, i);
 }
 #endif
 
@@ -66,7 +65,7 @@ void free(void* ptr) {
 #define ADKLIB_ENABLE_WRITE
 long write(int fd, const char *buf, long count);
 
-void putchar(char c)
+void putchar(char c)                  // fn: putchar; deps: write
 {
     write(1, &c, 1);
 }
