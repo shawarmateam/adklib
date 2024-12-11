@@ -100,10 +100,6 @@ void printf(const char * format, ...)
 #define va_end(v)        __builtin_va_end(v)
 #endif
 
-#ifdef ADKLIB_ENABLE_PUTFLT
-#define ADKLIB_ENABLE_FMOD
-#endif
-
 #ifdef ADKLIB_ENABLE_FMOD
 #define fmod(x, y) ( \
     (y) == .0f \
@@ -127,9 +123,9 @@ void putflt(float flt)
     int num = (int)flt;
     putnum(num);
     putchar('.');
-    flt = fmod(flt, 1.f);
+    flt = flt-num;
 
-    while ( !fmod(flt, 1.f) ) flt *= 10;
+    while ( flt-(int)flt ) flt *= 10;
     num = (int)flt;
     putnum(num);
 }
