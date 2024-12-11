@@ -4,16 +4,7 @@
 #define size_t unsigned int
 #define NULL 0
 
-#ifdef ADKLIB_ENABLE_PRINT
-#define ADKLIB_ENABLE_WRITE
-long write(int fd, const char *buf, long count);
-void print(const char * str)                        // fn: print; deps: write
-{
-    int i=0;
-    while (str[i]!=0) ++i;
-    write(1, str, i);
-}
-#endif
+
 
 
 #ifdef ADKLIB_MEMORY_ENABLE
@@ -61,8 +52,10 @@ void free(void* ptr) {
 
 #ifdef ADKLIB_ENABLE_PRINTF
 #define ADKLIB_ENABLE_PUTNUM
+#define ADKLIB_ENABLE_PRINT
 void putchar(char c);
 void putnum(int num);
+void print(const char * str);
 void printf(const char * format, ...)
 {
     __builtin_va_list args;
@@ -95,6 +88,17 @@ void printf(const char * format, ...)
     }
 
     __builtin_va_end(args);
+}
+#endif
+
+#ifdef ADKLIB_ENABLE_PRINT
+#define ADKLIB_ENABLE_WRITE
+long write(int fd, const char *buf, long count);
+void print(const char * str)                        // fn: print; deps: write
+{
+    int i=0;
+    while (str[i]!=0) ++i;
+    write(1, str, i);
 }
 #endif
 
