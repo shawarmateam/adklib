@@ -3,7 +3,8 @@
 int main()
 {
     char c = 'A';
-    printf("test: %c\n", c);
+    int i = 123;
+    printf("test: %c,\n %s,\n %d\n", c, "test", i);
 
     return 0;
 }

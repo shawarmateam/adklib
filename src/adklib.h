@@ -112,7 +112,6 @@ void print(const char * str)                        // fn: print; deps: write
 
 #ifdef ADKLIB_ENABLE_PUTNUM
 #define ADKLIB_ENABLE_PUTCHAR
-long write(int fd, const char *buf, long count);
 void putchar(char c);
 
 void putnum(int num)
@@ -130,7 +129,7 @@ void putnum(int num)
     }
 
     if (num / 10) putnum(num / 10);
-    putnum((num % 10) + '0');
+    putchar((num % 10) + '0');
 }
 #endif
 
