@@ -9,7 +9,7 @@
 long write(int fd, const char *buf, long count);
 void print(const char * str)                        // fn: print; deps: write
 {
-    int i;
+    int i=0;
     while (str[i]!=0) ++i;
     write(1, str, i);
 }
@@ -60,6 +60,31 @@ void free(void* ptr) {
 #endif // ADKLIB_MEMORY_ENABLE
 
 
+#ifdef ADKLIB_ENABLE_PUTNUM
+#define ADKLIB_ENABLE_PUTCHAR
+long write(int fd, const char *buf, long count);
+void putchar(char c);
+
+void putnum(int num)
+{
+    if (num == 0)
+    {
+        putchar('0');
+        return;
+    }
+
+    if (num < 0)
+    {
+        putchar('-');
+        num = -num;
+    }
+
+    if (num / 10) putnum(num / 10);
+    putchar((num % 10) + '0');
+}
+#endif
+
+
 
 #ifdef ADKLIB_ENABLE_PUTCHAR
 #define ADKLIB_ENABLE_WRITE
@@ -70,6 +95,8 @@ void putchar(char c)                  // fn: putchar; deps: write
     write(1, &c, 1);
 }
 #endif
+
+
 
 #ifdef ADKLIB_ENABLE_WRITE
 long write(int fd, const char *buf, long count) {
@@ -86,6 +113,26 @@ long write(int fd, const char *buf, long count) {
     return ret;
 }
 #endif
+
+/*#ifdef ADKLIB_ENABLE_SNPRINTF
+void snprintf(const char * format, ...)
+{
+    void ** args (void ** ) (&format+1);
+
+    while (*format)
+    {
+        if (*format == '%')
+        {
+            format++;
+            switch (*format)
+            {
+                case 'd':
+            }
+        }
+    }
+}
+#endif*/
+
 
 #ifdef ADKLIB_ENABLE_BOOL
 #define bool char
