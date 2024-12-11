@@ -80,6 +80,7 @@ void printf(const char * format, ...)
                     const char * str = __builtin_va_arg(args, const char *);
                     print(str);
                     break;
+                case '%':
                 default:
                     putchar('%');
             }
@@ -99,6 +100,43 @@ void printf(const char * format, ...)
 #define va_end(v)        __builtin_va_end(v)
 #endif
 
+#ifdef ADKLIB_ENABLE_PUTFLT
+#define ADKLIB_ENABLE_FMOD
+#endif
+
+#ifdef ADKLIB_ENABLE_FMOD
+#define fmod(x, y) ( \
+    (y) == .0f \
+        ? .0f \
+        : ((x) - ((int)((x) / (y))) * (y)))
+#endif
+
+#ifdef ADKLIB_ENABLE_PUTFLT
+#define ADKLIB_ENABLE_PUTNUM
+void putchar(char c);
+void putnum(int num);
+
+void putflt(float flt)
+{
+    if (flt < 0)
+    {
+        putchar('-');
+        flt = -flt;
+    }
+
+    int num = (int)flt;
+    putnum(num);
+    putchar('.');
+    flt = fmod(flt, 1.f);
+
+    while ( !fmod(flt, 1.f) ) flt *= 10;
+    num = (int)flt;
+    putnum(num);
+}
+
+#endif
+
+
 #ifdef ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_WRITE
 long write(int fd, const char *buf, long count);
@@ -109,6 +147,8 @@ void print(const char * str)                        // fn: print; deps: write
     write(1, str, i);
 }
 #endif
+
+
 
 #ifdef ADKLIB_ENABLE_PUTNUM
 #define ADKLIB_ENABLE_PUTCHAR
