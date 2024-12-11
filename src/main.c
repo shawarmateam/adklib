@@ -2,8 +2,8 @@
 
 int main()
 {
-    print("hello world\n");
-    putnum(12);
+    char c = 'A';
+    printf("test: %c\n", c);
 
     return 0;
 }

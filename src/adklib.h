@@ -59,6 +59,44 @@ void free(void* ptr) {
 }
 #endif // ADKLIB_MEMORY_ENABLE
 
+#ifdef ADKLIB_ENABLE_PRINTF
+#define ADKLIB_ENABLE_PUTNUM
+void putchar(char c);
+void putnum(int num);
+void printf(const char * format, ...)
+{
+    __builtin_va_list args;
+    __builtin_va_start(args, format);
+
+    while (*format)
+    {
+        if (*format == '%')
+        {
+            format++;
+            switch (*format)
+            {
+                case 'd':
+                    int d = __builtin_va_arg(args, int);
+                    putnum(d);
+                    break;
+                case 'c':
+                    int c = __builtin_va_arg(args, int);
+                    putchar((char)c);
+                    break;
+                case 's':
+                    const char * str = __builtin_va_arg(args, const char *);
+                    print(str);
+                    break;
+                default:
+                    putchar('%');
+            }
+        } else putchar(*format);
+        format++;
+    }
+
+    __builtin_va_end(args);
+}
+#endif
 
 #ifdef ADKLIB_ENABLE_PUTNUM
 #define ADKLIB_ENABLE_PUTCHAR
@@ -80,7 +118,7 @@ void putnum(int num)
     }
 
     if (num / 10) putnum(num / 10);
-    putchar((num % 10) + '0');
+    putnum((num % 10) + '0');
 }
 #endif
 
@@ -114,24 +152,7 @@ long write(int fd, const char *buf, long count) {
 }
 #endif
 
-/*#ifdef ADKLIB_ENABLE_SNPRINTF
-void snprintf(const char * format, ...)
-{
-    void ** args (void ** ) (&format+1);
 
-    while (*format)
-    {
-        if (*format == '%')
-        {
-            format++;
-            switch (*format)
-            {
-                case 'd':
-            }
-        }
-    }
-}
-#endif*/
 
 
 #ifdef ADKLIB_ENABLE_BOOL
