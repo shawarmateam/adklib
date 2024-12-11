@@ -53,8 +53,10 @@ void free(void* ptr) {
 #ifdef ADKLIB_ENABLE_PRINTF
 #define ADKLIB_ENABLE_PUTNUM
 #define ADKLIB_ENABLE_PRINT
+#define ADKLIB_ENABLE_PUTFLT
 void putchar(char c);
 void putnum(int num);
+void putflt(float flt);
 void print(const char * str);
 void printf(const char * format, ...)
 {
@@ -79,6 +81,10 @@ void printf(const char * format, ...)
                 case 's':
                     const char * str = __builtin_va_arg(args, const char *);
                     print(str);
+                    break;
+                case 'f':
+                    double f = __builtin_va_arg(args, double);
+                    putflt((float)f);
                     break;
                 case '%':
                 default:
