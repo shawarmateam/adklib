@@ -91,6 +91,14 @@ void printf(const char * format, ...)
 }
 #endif
 
+#ifdef ADKLIB_ENABLE_MULTIARG
+#define va_list          __builtin_va_list
+#define va_start(v, ...) __builtin_va_start(v, 0)
+#define va_start(v,l)    __builtin_va_arg(v,l)
+#define va_arg(v,l)      __builtin_va_arg(v,l)
+#define va_end(v)        __builtin_va_end(v)
+#endif
+
 #ifdef ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_WRITE
 long write(int fd, const char *buf, long count);
