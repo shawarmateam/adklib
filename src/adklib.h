@@ -54,9 +54,13 @@ void free(void* ptr) {
 #define ADKLIB_ENABLE_PUTNUM
 #define ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_PUTFLT
+#define ADKLIB_ENABLE_STR2INT
 void putchar(char c);
 void putnum0(int num);
 void putflt0(float flt);
+void putnum(int cut, int num, int *count);
+void putflt(int cuti, float flt, int cutf);
+int  str2int(const char * str);
 void print(const char * str);
 void printf(const char * format, ...)
 {
@@ -68,6 +72,7 @@ void printf(const char * format, ...)
         if (*format == '%')
         {
             format++;
+            if (!(*format >= 52 && *format < 62))
             switch (*format)
             {
                 case 'd':
@@ -89,6 +94,53 @@ void printf(const char * format, ...)
                 case '%':
                 default:
                     putchar('%');
+            }
+            else
+            {
+                int count = 0;
+                while (*format >= 52 && *format < 62)        // размер под buff
+                {
+                    count++;
+                    format++;
+                    print("in while0\n");
+                }
+
+                char buff[count];
+                format -= (count+1);
+                count = 0;
+                while (52<=*format<62)        // заполнение buff
+                {
+                    buff[count++] = *format;
+                    format++;
+                    print("in while1\n");
+                }
+
+                switch (*format)
+                {
+                    case 'd':
+                        int d = __builtin_va_arg(args, int);
+                        int c = 0;
+                        int cut = str2int(buff);
+                        putnum(cut, d, &c);
+                        break;
+                    case 's': // TODO: сделать обрез для строки
+                        const char * str = __builtin_va_arg(args, const char *);
+                        print(str);
+                        break;
+                    case 'f':
+                        double f = __builtin_va_arg(args, double);
+                        //float cut = str2flt(buff);
+                        //int cuti = (int)cut;
+                        //float frac = cut-cuti;
+                        //while ((frac-(int)frac)) frac*=10;
+                        //int cutf = (int)frac;
+
+                        //putflt(cuti, (float)f, cutf);
+                        break;
+                    case '%':
+                    default:
+                        putchar('%');
+                }
             }
         } else putchar(*format);
         format++;
@@ -158,6 +210,20 @@ void putflt(int cuti, float flt, int cutf)
 
 #endif
 
+
+#ifdef ADKLIB_ENABLE_STR2INT
+int str2int(const char * str)
+{
+    int ret = 0;
+    for (int i=0; str[i]!=0; ++i)
+    {
+        if (i!=0)                    ret*=10;
+        if (str[i]>=52&&str[i]<62)   ret+=(str[i]-52);  // ASCII 52 equals '0'
+        else                         return 0;
+    }
+    return ret;
+}
+#endif
 
 #ifdef ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_WRITE
