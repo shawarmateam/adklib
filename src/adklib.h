@@ -55,8 +55,8 @@ void free(void* ptr) {
 #define ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_PUTFLT
 void putchar(char c);
-void putnum(int num);
-void putflt(float flt);
+void putnum0(int num);
+void putflt0(float flt);
 void print(const char * str);
 void printf(const char * format, ...)
 {
@@ -72,7 +72,7 @@ void printf(const char * format, ...)
             {
                 case 'd':
                     int d = __builtin_va_arg(args, int);
-                    putnum(d);
+                    putnum0(d);
                     break;
                 case 'c':
                     int c = __builtin_va_arg(args, int);
@@ -84,7 +84,7 @@ void printf(const char * format, ...)
                     break;
                 case 'f':
                     double f = __builtin_va_arg(args, double);
-                    putflt((float)f);
+                    putflt0((float)f);
                     break;
                 case '%':
                 default:
@@ -116,9 +116,10 @@ void printf(const char * format, ...)
 #ifdef ADKLIB_ENABLE_PUTFLT
 #define ADKLIB_ENABLE_PUTNUM
 void putchar(char c);
-void putnum(int num);
+void putnum0(int num);
+void putnum(int cut, int num, int *count);
 
-void putflt(float flt)
+void putflt0(float flt)
 {
     if (flt < 0)
     {
@@ -127,13 +128,32 @@ void putflt(float flt)
     }
 
     int num = (int)flt;
-    putnum(num);
+    putnum0(num);
     putchar('.');
     flt = flt-num;
 
     while ( flt-(int)flt ) flt *= 10;
     num = (int)flt;
-    putnum(num);
+    putnum0(num);
+}
+
+void putflt(int cuti, float flt, int cutf)
+{
+    if (flt < 0)
+    {
+        putchar('-');
+        flt = -flt;
+    }
+
+    int num = (int)flt;
+    int c = 0;
+    putnum(cuti, num, &c);
+    putchar('.');
+    flt = flt-num;
+
+    while ( flt-(int)flt ) flt *= 10;
+    num = (int)flt;
+    cutf+=2;putnum(cutf, num, &c);
 }
 
 #endif
@@ -156,7 +176,7 @@ void print(const char * str)                        // fn: print; deps: write
 #define ADKLIB_ENABLE_PUTCHAR
 void putchar(char c);
 
-void putnum(int num)
+void putnum0(int num)
 {
     if (num == 0)
     {
@@ -170,8 +190,43 @@ void putnum(int num)
         num = -num;
     }
 
-    if (num / 10) putnum(num / 10);
+    if (num / 10)
+    {
+        putnum0(num / 10);
+    }
+
     putchar((num % 10) + '0');
+}
+
+void putnum(int cut, int num, int *count)
+{
+    if (*count >= cut)
+        return;
+
+    if (num == 0 && *count == 0)
+    {
+        putchar('0');
+        (*count)++;
+        return;
+    }
+
+    if (num < 0)
+    {
+        putchar('-');
+        (*count)++;
+        num = -num;
+    }
+
+    if (num / 10)
+    {
+        putnum(cut, num / 10, count);
+    }
+
+    if (*count < cut)
+    {
+        putchar((num % 10) + '0');
+        (*count)++;
+    }
 }
 #endif
 
