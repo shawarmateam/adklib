@@ -71,85 +71,71 @@ void printf(const char * format, ...)
 
     while (*format)
     {
-        if (*format == '%')
+        if (*format != '%')
         {
-            format++;
-            if (!(*format > 47 && *format < 58))
+            putchar(*format++);
+            continue;
+        }
+
+        format++;
+        if (*format >= '0' && *format <= '9')
+        {
+            char buff[8];
+            int count = 0;
+            
+            while (*format >= '0' && *format <= '9' && count < 7)
+                buff[count++] = *format++;
+            buff[count] = '\0';
+
+            switch (*format)
             {
-                switch (*format)
-                {
-                    case 'd':
-                        int d = __builtin_va_arg(args, int);
-                        putnum0(d);
-                        break;
-                    case 'c':
-                        int c = __builtin_va_arg(args, int);
-                        putchar((char)c);
-                        break;
-                    case 's':
-                        const char * str = __builtin_va_arg(args, const char *);
-                        print(str);
-                        break;
-                    case 'f':
-                        double f = __builtin_va_arg(args, double);
-                        putflt0((float)f);
-                        break;
-                    case '%':
-                    default:
-                        putchar('%');
+                case 'd': {
+                    int d = __builtin_va_arg(args, int);
+                    int c = 0;
+                    putnum(str2int(buff), d, &c);
+                    break;
                 }
+                case 'f': {
+                    double f = __builtin_va_arg(args, double);
+                    putflt0((float)f);
+                    break;
+                }
+                case 's': {
+                    const char *s = __builtin_va_arg(args, const char *);
+                    print(s);
+                    break;
+                }
+                case 'c': {
+                    putchar((char)__builtin_va_arg(args, int));
+                    break;
+                }
+                default:
+                    putchar('%');
+                    continue;
             }
-            else
+        }
+        else
+        {
+            switch (*format)
             {
-                int count = 0;
-                while (*format > 47 && *format < 58)        // размер под buff
-                {
-                    count++;
-                    format++;
-                }
-
-                char buff[count+1];
-                buff[count] = 0;
-
-                format -= count;
-                count = 0;
-                while (*format > 47 && *format < 58)        // заполнение buff
-                {
-                    buff[count++] = *format;
-                    format++;
-                }
-
-                switch (*format)
-                {
-                    case 'd':
-                        int d = __builtin_va_arg(args, int);
-                        int c = 0;
-                        int cut = str2int(buff);
-                        putnum(cut, d, &c);
-                        break;
-                    case 's': // TODO: сделать обрез для строки
-                        const char * str = __builtin_va_arg(args, const char *);
-                        print(str);
-                        break;
-                    case 'f':
-                        double f = __builtin_va_arg(args, double);
-                        //float cut = str2flt(buff);
-                        //int cuti = (int)cut;
-                        //float frac = cut-cuti;
-                        //while ((frac-(int)frac)) frac*=10;
-                        //int cutf = (int)frac;
-
-                        //putflt(cuti, (float)f, cutf);
-                        break;
-                    case '%':
-                    default:
-                        putchar('%');
-                }
+                case 'd':
+                    putnum0(__builtin_va_arg(args, int));
+                    break;
+                case 'f':
+                    putflt0((float)__builtin_va_arg(args, double));
+                    break;
+                case 's':
+                    print(__builtin_va_arg(args, const char *));
+                    break;
+                case 'c':
+                    putchar((char)__builtin_va_arg(args, int));
+                    break;
+                default:
+                    putchar('%');
             }
-        } else putchar(*format);
+        }
         format++;
     }
-
     __builtin_va_end(args);
 }
 #endif
