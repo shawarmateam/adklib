@@ -5,6 +5,42 @@
 #define NULL 0
 
 
+// PART OF DEPENDENCIES
+#ifdef ADKLIB_ENABLE_PRINTF
+#define ADKLIB_ENABLE_PUTNUM
+#define ADKLIB_ENABLE_PRINT
+#define ADKLIB_ENABLE_PUTFLT
+#define ADKLIB_ENABLE_STR2INT
+#define ADKLIB_ENABLE_STR2FLT
+
+void putchar(char c);
+void putnum0(int num);
+void putflt0(float flt);
+void putnum(int cut, int num, int *count);
+void putflt(int cuti, float flt, int cutf);
+int  str2int(const char * str);
+float str2flt(const char * str);
+void print(const char * str);
+#endif
+
+#ifdef ADKLIB_ENABLE_PUTFLT
+#define ADKLIB_ENABLE_PUTNUM
+void putchar(char c);
+void putnum0(int num);
+void putnum(int cut, int num, int *count);
+#endif
+
+#ifdef ADKLIB_ENABLE_PRINT
+#define ADKLIB_ENABLE_WRITE
+long write(int fd, const char *buf, long count);
+#endif
+
+
+
+
+
+
+
 
 
 #ifdef ADKLIB_MEMORY_ENABLE
@@ -51,19 +87,6 @@ void free(void* ptr) {
 #endif // ADKLIB_MEMORY_ENABLE
 
 #ifdef ADKLIB_ENABLE_PRINTF
-#define ADKLIB_ENABLE_PUTNUM
-#define ADKLIB_ENABLE_PRINT
-#define ADKLIB_ENABLE_PUTFLT
-#define ADKLIB_ENABLE_STR2INT
-#define ADKLIB_ENABLE_STR2FLT
-void putchar(char c);
-void putnum0(int num);
-void putflt0(float flt);
-void putnum(int cut, int num, int *count);
-void putflt(int cuti, float flt, int cutf);
-int  str2int(const char * str);
-float str2flt(const char * str);
-void print(const char * str);
 void printf(const char * format, ...)
 {
     __builtin_va_list args;
@@ -156,11 +179,6 @@ void printf(const char * format, ...)
 #endif
 
 #ifdef ADKLIB_ENABLE_PUTFLT
-#define ADKLIB_ENABLE_PUTNUM
-void putchar(char c);
-void putnum0(int num);
-void putnum(int cut, int num, int *count);
-
 void putflt0(float flt)
 {
     if (flt < 0)
@@ -197,7 +215,6 @@ void putflt(int cuti, float flt, int cutf)
     num = (int)flt;
     cutf+=2;putnum(cutf, num, &c);
 }
-
 #endif
 
 
@@ -216,8 +233,6 @@ int str2int(const char * str)
 #endif
 
 #ifdef ADKLIB_ENABLE_PRINT
-#define ADKLIB_ENABLE_WRITE
-long write(int fd, const char *buf, long count);
 void print(const char * str)                        // fn: print; deps: write
 {
     int i=0;
