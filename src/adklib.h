@@ -55,12 +55,14 @@ void free(void* ptr) {
 #define ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_PUTFLT
 #define ADKLIB_ENABLE_STR2INT
+#define ADKLIB_ENABLE_STR2FLT
 void putchar(char c);
 void putnum0(int num);
 void putflt0(float flt);
 void putnum(int cut, int num, int *count);
 void putflt(int cuti, float flt, int cutf);
 int  str2int(const char * str);
+float str2flt(const char * str);
 void print(const char * str);
 void printf(const char * format, ...)
 {
@@ -72,55 +74,64 @@ void printf(const char * format, ...)
         if (*format == '%')
         {
             format++;
-            if (!(*format >= 52 && *format < 62))
-            switch (*format)
+            putnum0(*format);
+            putchar(' ');
+            if (!(*format > 47 && *format < 58))
             {
-                case 'd':
-                    int d = __builtin_va_arg(args, int);
-                    putnum0(d);
-                    break;
-                case 'c':
-                    int c = __builtin_va_arg(args, int);
-                    putchar((char)c);
-                    break;
-                case 's':
-                    const char * str = __builtin_va_arg(args, const char *);
-                    print(str);
-                    break;
-                case 'f':
-                    double f = __builtin_va_arg(args, double);
-                    putflt0((float)f);
-                    break;
-                case '%':
-                default:
-                    putchar('%');
+                switch (*format)
+                {
+                    case 'd':
+                        int d = __builtin_va_arg(args, int);
+                        putnum0(d);
+                        break;
+                    case 'c':
+                        int c = __builtin_va_arg(args, int);
+                        putchar((char)c);
+                        break;
+                    case 's':
+                        const char * str = __builtin_va_arg(args, const char *);
+                        print(str);
+                        break;
+                    case 'f':
+                        double f = __builtin_va_arg(args, double);
+                        putflt0((float)f);
+                        break;
+                    case '%':
+                    default:
+                        putchar('%');
+                }
             }
             else
             {
+                print("in else\n");
                 int count = 0;
-                while (*format >= 52 && *format < 62)        // размер под buff
+                while (*format > 47 && *format < 58)        // размер под buff
                 {
                     count++;
                     format++;
-                    print("in while0\n");
                 }
 
                 char buff[count];
-                format -= (count+1);
+                format -= count;
                 count = 0;
-                while (52<=*format<62)        // заполнение buff
+                while (*format > 47 && *format < 58)        // заполнение buff
                 {
                     buff[count++] = *format;
                     format++;
-                    print("in while1\n");
                 }
 
+                putchar(buff[0]);
+                putchar(*format);
                 switch (*format)
                 {
                     case 'd':
                         int d = __builtin_va_arg(args, int);
                         int c = 0;
-                        int cut = str2int(buff);
+                        const char * addr_buff = buff;
+                        putchar('\n');
+                        print(addr_buff);
+                        int cut = str2int(addr_buff);
+                        putnum0(cut);
                         putnum(cut, d, &c);
                         break;
                     case 's': // TODO: сделать обрез для строки
@@ -218,7 +229,7 @@ int str2int(const char * str)
     for (int i=0; str[i]!=0; ++i)
     {
         if (i!=0)                    ret*=10;
-        if (str[i]>=52&&str[i]<62)   ret+=(str[i]-52);  // ASCII 52 equals '0'
+        if (str[i]>=48&&str[i]<58)   ret+=(str[i]-48);  // ASCII 48 equals '0'
         else                         return 0;
     }
     return ret;
