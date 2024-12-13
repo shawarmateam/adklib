@@ -5,8 +5,18 @@
 #define NULL 0
 
 
+/* COPYRIGHT (c) on "adklib" 2024 Coffee Team (by Shawarma) (adisteyf adk.)
+ * MIT LICENSE (THE SOFTWARE IS PROVIDED "AS IS")
+ * Read the LICENSE for more details.
+ */
+
+
+
+
+
 // PART OF DEPENDENCIES
-#ifdef ADKLIB_ENABLE_PRINTF
+#ifdef ADKLIB_ENABLE_PRINTF                  // functions: printf; \
+                                                deps:      putnum, print, putflt, str2int, str2flt
 #define ADKLIB_ENABLE_PUTNUM
 #define ADKLIB_ENABLE_PRINT
 #define ADKLIB_ENABLE_PUTFLT
@@ -23,26 +33,34 @@ float str2flt(const char * str);
 void print(const char * str);
 #endif
 
-#ifdef ADKLIB_ENABLE_PUTFLT
+#ifdef ADKLIB_ENABLE_PUTFLT                  // functions: putflt0, putflt; \
+                                                deps:      putnum
 #define ADKLIB_ENABLE_PUTNUM
 void putchar(char c);
 void putnum0(int num);
 void putnum(int cut, int num, int *count);
 #endif
 
-#ifdef ADKLIB_ENABLE_PRINT
+#ifdef ADKLIB_ENABLE_PRINT                   // functions: print \
+                                                deps:      write
+#define ADKLIB_ENABLE_WRITE
+long write(int fd, const char *buf, long count);
+#endif
+
+#ifdef ADKLIB_ENABLE_PUTNUM
+#define ADKLIB_ENABLE_PUTCHAR
+void putchar(char c);
+#endif
+
+#ifdef ADKLIB_ENABLE_PUTCHAR                 // functions: putchar \
+                                                deps:      write
 #define ADKLIB_ENABLE_WRITE
 long write(int fd, const char *buf, long count);
 #endif
 
 
 
-
-
-
-
-
-
+// CODE PART
 #ifdef ADKLIB_MEMORY_ENABLE
 #ifndef ADKLIB_MEMORY_POOL_SIZE
 #define ADKLIB_MEMORY_POOL_SIZE 1024
@@ -243,12 +261,7 @@ void print(const char * str)                        // fn: print; deps: write
 #define puts(str) print(str); putchar('\n')
 #endif
 
-
-
 #ifdef ADKLIB_ENABLE_PUTNUM
-#define ADKLIB_ENABLE_PUTCHAR
-void putchar(char c);
-
 void putnum0(int num)
 {
     if (num == 0)
@@ -306,10 +319,6 @@ void putnum(int cut, int num, int *count)
 
 
 #ifdef ADKLIB_ENABLE_PUTCHAR
-#define ADKLIB_ENABLE_WRITE
-long write(int fd, const char *buf, long count);
-
-// fn: putchar; deps: write
 #define putchar(c) write(1, &c, 1)
 #endif
 
