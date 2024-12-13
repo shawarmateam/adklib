@@ -207,9 +207,9 @@ int str2int(const char * str)
     int ret = 0;
     for (int i=0; str[i]!=0; ++i)
     {
-        if (i!=0)                    ret*=10;
-        if (str[i]>=48&&str[i]<58)   ret+=(str[i]-48);  // ASCII 48 equals '0'
-        else                         return 0;
+        if (i!=0)                       ret*=10;
+        if (str[i]>='0'&&str[i]<='9')   ret+=(str[i]-'0');  // ASCII 48 equals '0'
+        else                            return 0;
     }
     return ret;
 }
@@ -224,6 +224,8 @@ void print(const char * str)                        // fn: print; deps: write
     while (str[i]!=0) ++i;
     write(1, str, i);
 }
+
+#define puts(str) print(str); putchar('\n')
 #endif
 
 
