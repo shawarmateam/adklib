@@ -294,10 +294,8 @@ void putnum(int cut, int num, int *count)
 #define ADKLIB_ENABLE_WRITE
 long write(int fd, const char *buf, long count);
 
-void putchar(char c)                  // fn: putchar; deps: write
-{
-    write(1, &c, 1);
-}
+// fn: putchar; deps: write
+#define putchar(c) write(1, &c, 1)
 #endif
 
 
