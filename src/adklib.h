@@ -74,8 +74,6 @@ void printf(const char * format, ...)
         if (*format == '%')
         {
             format++;
-            putnum0(*format);
-            putchar(' ');
             if (!(*format > 47 && *format < 58))
             {
                 switch (*format)
@@ -103,7 +101,6 @@ void printf(const char * format, ...)
             }
             else
             {
-                print("in else\n");
                 int count = 0;
                 while (*format > 47 && *format < 58)        // размер под buff
                 {
@@ -111,7 +108,9 @@ void printf(const char * format, ...)
                     format++;
                 }
 
-                char buff[count];
+                char buff[count+1];
+                buff[count] = 0;
+
                 format -= count;
                 count = 0;
                 while (*format > 47 && *format < 58)        // заполнение buff
@@ -120,18 +119,12 @@ void printf(const char * format, ...)
                     format++;
                 }
 
-                putchar(buff[0]);
-                putchar(*format);
                 switch (*format)
                 {
                     case 'd':
                         int d = __builtin_va_arg(args, int);
                         int c = 0;
-                        const char * addr_buff = buff;
-                        putchar('\n');
-                        print(addr_buff);
-                        int cut = str2int(addr_buff);
-                        putnum0(cut);
+                        int cut = str2int(buff);
                         putnum(cut, d, &c);
                         break;
                     case 's': // TODO: сделать обрез для строки
